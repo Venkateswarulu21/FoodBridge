@@ -12,6 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,8 +30,8 @@ public class MailService {
             .build();
 
     public MailService(
-            @Value("${RESEND_API_KEY:}") String apiKey,
-            @Value("${MAIL_FROM:onboarding@resend.dev}") String from,
+            @Value("${BREVO_API_KEY:}") String apiKey,
+            @Value("${MAIL_FROM:foodbridge2124@gmail.com}") String from,
             ObjectMapper objectMapper) {
 
         this.apiKey = apiKey;
@@ -50,36 +51,39 @@ public class MailService {
             case LOGIN -> "sign in to FoodBridge";
         };
 
-        String text = "Your FoodBridge code is " + code + ".\n\n"
-                + "Use it to " + action + ". It expires in "
-                + ttlMinutes + " minutes.\n"
-                + "If you didn't ask for this, ignore this email.";
+        String text = "Your FoodBridge verification code is "
+                + code + ".\n\n"
+                + "Use it to " + action + ".\n"
+                + "It expires in " + ttlMinutes + " minutes.\n"
+                + "If you did not request this code, ignore this email.";
 
         String html = "<div style=\"font-family:Arial,sans-serif;"
                 + "max-width:480px;margin:auto;padding:24px;"
                 + "border:1px solid #eee;border-radius:12px\">"
                 + "<h2 style=\"color:#E8821A\">FoodBridge</h2>"
                 + "<p>Use this code to " + action + ":</p>"
-                + "<p style=\"font-size:34px;font-weight:700;"
+                + "<p style=\"font-size:34px;font-weight:bold;"
                 + "letter-spacing:8px;color:#1A1A2E\">"
                 + code + "</p>"
                 + "<p>It expires in " + ttlMinutes
-                + " minutes. If you didn't request it, ignore this email."
-                + "</p></div>";
+                + " minutes. If you did not request it, "
+                + "ignore this email.</p></div>";
 
         try {
-            sendEmail(to,
+            sendEmail(
+                    to,
                     "FoodBridge: " + purpose.subject(),
                     text,
-                    html);
-
+                    html
+            );
         } catch (Exception e) {
             log.error("Could not send OTP email to {}: {}",
                     to, e.getMessage());
 
             throw new OtpException(
                     "We couldn't send the email right now. "
-                    + "Please try again in a minute.");
+                    + "Please try again in a minute."
+            );
         }
     }
 
@@ -91,7 +95,7 @@ public class MailService {
 
         if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException(
-                    "RESEND_API_KEY is not configured.");
+                    "BREVO_API_KEY is not configured.");
         }
 
         if (from == null || from.isBlank()) {
@@ -99,43 +103,46 @@ public class MailService {
                     "MAIL_FROM is not configured.");
         }
 
-        String sender = from.contains("<")
-                ? from
-                : "FoodBridge <" + from + ">";
-
         Map<String, Object> payload = Map.of(
-                "from", sender,
-                "to", new String[]{to},
+                "sender", Map.of(
+                        "name", "FoodBridge",
+                        "email", from
+                ),
+                "to", List.of(Map.of("email", to)),
                 "subject", subject,
-                "text", text,
-                "html", html
+                "textContent", text,
+                "htmlContent", html
         );
 
         String json = objectMapper.writeValueAsString(payload);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.resend.com/emails"))
+                .uri(URI.create(
+                        "https://api.brevo.com/v3/smtp/email"))
                 .timeout(Duration.ofSeconds(20))
-                .header("Authorization", "Bearer " + apiKey)
-                .header("Content-Type", "application/json")
+                .header("api-key", apiKey)
+                .header("accept", "application/json")
+                .header("content-type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
         HttpResponse<String> response = httpClient.send(
                 request,
-                HttpResponse.BodyHandlers.ofString());
+                HttpResponse.BodyHandlers.ofString()
+        );
 
         if (response.statusCode() < 200
                 || response.statusCode() >= 300) {
-            log.error("Resend API returned HTTP {}: {}",
+
+            log.error("Brevo API returned HTTP {}: {}",
                     response.statusCode(), response.body());
 
             throw new IllegalStateException(
-                    "Resend rejected the email request. HTTP "
+                    "Brevo rejected the email request. HTTP "
                     + response.statusCode());
         }
 
-        log.info("Email accepted by Resend for recipient {}", to);
+        log.info("Brevo accepted email for recipient {}", to);
     }
 
     public String sendTest(String to) {
@@ -148,10 +155,8 @@ public class MailService {
             );
 
             return null;
-
         } catch (Exception e) {
             log.error("Test email failed: {}", e.getMessage());
-
             return e.getMessage();
         }
     }
