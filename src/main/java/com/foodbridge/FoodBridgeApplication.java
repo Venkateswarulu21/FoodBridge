@@ -16,6 +16,7 @@ public class FoodBridgeApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(FoodBridgeApplication.class, args);
+    	System.out.println("Food bridge");
+    	SpringApplication.run(FoodBridgeApplication.class, args);
     }
 }
