@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: foodbridge
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/food_bridge?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update          # creates / extends the tables from the entities; use "validate" once stable
+    open-in-view: true          # the JSP views read lazy relations (donor name, volunteer name, ...)
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  jackson:
+    date-format: "yyyy-MM-dd'T'HH:mm:ssXXX"
+    serialization:
+      write-dates-as-timestamps: false
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}	
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}		
+#    username: ${MAIL_USERNAME:foodbridge2124@gmail.com}
+#    password: ${MAIL_PASSWORD:qoprnvuvnatzgrdr}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 8000
+      mail.smtp.writetimeout: 8000
+
+server:
+  port: 8080
+  servlet:
+    session:
+      timeout: 60m
+      cookie:
+        http-only: true
+        same-site: lax
+
+app:
+  seed-demo-data: ${SEED_DEMO_DATA:true}   # demo accounts, only added when the users table is empty
+  upload-dir: ${UPLOAD_DIR:uploads}
+  mail:
+    from: ${MAIL_FROM:${MAIL_USERNAME:}}
+  login-otp:
+    enabled: ${LOGIN_OTP_ENABLED:false}  # set to true once /admin/email-test says OK
+  otp:
+    ttl-minutes: 10
+    max-attempts: 5
+    resend-cooldown-seconds: 60
+    max-per-hour: 10

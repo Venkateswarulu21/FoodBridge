@@ -1,0 +1,18 @@
+# Copy this file to  config/application.yml  (same folder, without ".example").
+# Spring Boot reads it automatically and it overrides src/main/resources/application.yml.
+# config/application.yml is listed in .gitignore, so your passwords never reach GitHub.
+
+spring:
+  datasource:
+    password: your-mysql-password
+  mail:
+    host: smtp-relay.brevo.com            # Gmail: smtp.gmail.com
+    port: 587
+    username: your-brevo-smtp-login       # looks like abc123@smtp-brevo.com   (Gmail: your address)
+    password: your-smtp-key               # Brevo SMTP key / Gmail App Password
+
+app:
+  mail:
+    from: you@gmail.com                   # must be a sender you verified in Brevo
+  login-otp:
+    enabled: false                        # set to true once  http://localhost:8080/admin/email-test  says OK

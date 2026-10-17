@@ -1,0 +1,18 @@
+# Build output
+target/
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Local media & database files
+uploads/
+*.sql
+
+# Version control & docs
+.git/
+.gitignore
+README.md
