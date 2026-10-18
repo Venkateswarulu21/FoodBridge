@@ -124,6 +124,18 @@ function initProgressBars() {
   });
 }
 
+// ===== Tables -> labelled cards on mobile (labels come from <th>) =====
+function initResponsiveTables() {
+  document.querySelectorAll('.table-wrap table').forEach(table => {
+    const heads = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      Array.from(tr.children).forEach((td, i) => {
+        if (heads[i] && !td.hasAttribute('data-label')) td.setAttribute('data-label', heads[i]);
+      });
+    });
+  });
+}
+
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
   initNotifications();
@@ -133,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initForms();
   initNav();
   initProgressBars();
+  initResponsiveTables();
 
   // Poll notifications every 60s
   if (typeof contextPath !== 'undefined') {

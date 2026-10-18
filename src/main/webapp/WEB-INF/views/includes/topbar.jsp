@@ -211,9 +211,32 @@
   white-space: nowrap;
 }
 .time-chip .time-icon { font-size: 13px; }
+
+/* ===== Mobile menu button + compact topbar ===== */
+.menu-btn {
+  display: none; width: 42px; height: 42px; flex-shrink: 0;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.8);
+  border-radius: 12px; font-size: 20px; cursor: pointer; color: var(--charcoal);
+  box-shadow: 0 2px 8px rgba(26,26,46,.08);
+}
+@media (max-width: 900px) {
+  .menu-btn { display: flex; }
+  .topbar { padding: 12px 14px; margin-bottom: 18px; gap: 10px; border-radius: 16px; }
+  .topbar-left { flex: 1; min-width: 0; }
+  .topbar-left h2 { font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .breadcrumb, .topbar-left p, .time-chip,
+  .user-chip span, .user-chip .online-dot { display: none; }
+  .topbar-right { position: static; gap: 8px; }   /* so the panel anchors to the topbar */
+  .user-chip { padding: 0; background: none; border: 0; box-shadow: none; }
+  .notif-btn { width: 40px; height: 40px; }
+  .notif-panel { left: 0; right: 0; width: auto; top: calc(100% + 8px); }
+}
 </style>
 
 <div class="topbar">
+  <button type="button" class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+
   <div class="topbar-left">
     <div class="breadcrumb">
       <span>FoodBridge</span>

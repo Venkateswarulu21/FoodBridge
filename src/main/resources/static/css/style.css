@@ -453,21 +453,67 @@ select.form-control   { appearance: none; background-image: url("data:image/svg+
 .progress-fill.green { background: var(--forest-light); }
 
 /* ===== Responsive ===== */
+html { -webkit-text-size-adjust: 100%; }
+img  { max-width: 100%; }
+
+@media (max-width: 1100px) {
+  .main-content { padding: 28px 24px !important; }
+}
+
 @media (max-width: 900px) {
-  .sidebar      { width: 64px; min-width: 64px; }
-  .sidebar-brand h1, .sidebar-brand p, .nav-item span, .nav-section { display: none; }
-  .nav-item     { justify-content: center; }
-  .main-content { padding: 20px 16px; }
+  .main-content { padding: 16px 14px 28px !important; min-width: 0; }
   .auth-left    { display: none; }
-  .auth-right   { padding: 32px 20px; }
+  .auth-right   { padding: 28px 18px; }
   .form-grid    { grid-template-columns: 1fr; }
+  .stats-grid   { grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 12px; }
+  .two-col      { grid-template-columns: 1fr !important; }
+  .card-header  { flex-wrap: wrap; gap: 10px; padding: 16px; }
+  .card-body    { padding: 16px; }
+  .quick-actions { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quick-action-btn { justify-content: center; }
+  .welcome-banner { padding: 22px 18px !important; }
+  .donate-btn   { width: 100%; justify-content: center; }
 }
 
 @media (max-width: 600px) {
-  .hero-nav     { padding: 16px 24px; }
-  .hero-body    { padding: 40px 24px; }
-  .stats-grid   { grid-template-columns: 1fr 1fr; }
-  .hero-stats   { gap: 20px; }
+  html { font-size: 14px; }          /* shrinks every rem size ~12% on phones */
+  body { font-size: 14px; }
+  .hero-nav   { padding: 14px 18px; }
+  .hero-body  { padding: 32px 18px; }
+  .hero-stats { gap: 20px; flex-wrap: wrap; }
+  .stat-card  { padding: 16px !important; }
+  .stat-card .stat-value { font-size: 1.5rem; }
+  .stat-card .stat-icon  { width: 40px; height: 40px; font-size: 18px; margin-bottom: 10px; }
+  .form-control { font-size: 16px; }  /* keep 16px: stops iPhone zoom-on-focus */
+  .btn { min-height: 40px; }
+}
+
+@media (max-width: 480px) {
+  .role-cards { grid-template-columns: 1fr !important; }   /* register page */
+}
+
+/* Tables become stacked cards on phones */
+@media (max-width: 700px) {
+  .table-wrap table, .table-wrap tbody { display: block; }
+  .table-wrap thead { position: absolute; left: -9999px; }
+  .table-wrap tbody tr {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px;
+    margin: 12px; padding: 8px 4px;
+    border: 1px solid var(--border); border-radius: 12px;
+    background: var(--warm-white);
+  }
+  .table-wrap td {
+    display: block; padding: 8px 12px !important;
+    border: 0 !important; max-width: none !important;
+    min-width: 0; word-break: break-word;
+  }
+  .table-wrap td:last-child { grid-column: 1 / -1; }
+  .table-wrap td[data-label]::before {
+    content: attr(data-label);
+    display: block; margin-bottom: 2px;
+    font-size: .66rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .07em; color: var(--muted);
+  }
 }
 
 /* ===== Animations ===== */

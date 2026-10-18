@@ -244,7 +244,31 @@
   from { transform: translateX(-12px); opacity: 0; }
   to   { transform: translateX(0); opacity: 1; }
 }
+
+/* ===== Mobile drawer ===== */
+.sidebar-overlay { display: none; }
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 280px; min-width: 280px; max-width: 85vw;
+    height: 100vh; height: 100dvh;
+    z-index: 1000;
+    transform: translateX(-105%);
+    animation: none;            /* the entrance animation would lock the transform */
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 8px 0 40px rgba(0,0,0,.35); }
+  .sidebar-overlay {
+    display: block; position: fixed; inset: 0; z-index: 999;
+    background: rgba(10,15,35,.55); backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+  body.nav-open { overflow: hidden; }
+}
 </style>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <nav class="sidebar">
 
@@ -363,5 +387,23 @@
       item.classList.add('active');
     }
   });
+})();
+
+// Mobile menu: open/close the sidebar drawer
+(function () {
+  const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('sidebarOverlay');
+  if (!sb || !ov) return;
+  const setOpen = o => {
+    sb.classList.toggle('open', o);
+    ov.classList.toggle('open', o);
+    document.body.classList.toggle('nav-open', o);
+  };
+  document.addEventListener('click', e => {
+    if (e.target.closest('#menuBtn')) setOpen(!sb.classList.contains('open'));
+    else if (e.target.closest('#sidebarOverlay') || e.target.closest('.sidebar .nav-item')) setOpen(false);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
+  window.matchMedia('(min-width: 901px)').addEventListener('change', e => { if (e.matches) setOpen(false); });
 })();
 </script>

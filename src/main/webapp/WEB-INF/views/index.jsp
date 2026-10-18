@@ -229,6 +229,23 @@ footer { background:#0d1117; color:rgba(255,255,255,.4); padding:48px; }
   .about-inner { grid-template-columns:1fr; gap:40px; }
   .footer-inner { flex-direction:column; text-align:center; }
 }
+
+/* ===== Phone fixes ===== */
+@media (max-width: 600px) {
+  .hero-nav { padding: 12px 16px; }
+  .hero-nav h1 { font-size: 1.15rem !important; }
+  .nav-actions { gap: 6px; }
+  .nav-actions .btn { padding: 8px 12px; font-size: .8rem; }
+  .hero-body { padding: 32px 18px; }
+  .hero-cta .btn { width: 100%; justify-content: center; }
+  .hero-stats { width: 100%; gap: 12px; padding: 14px 12px; justify-content: space-around; }
+  .hero-stat .val { font-size: 1.5rem; }
+  .steps { flex-direction: column; gap: 32px; }
+  .steps::before { display: none; }
+  .about-visual { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .ngo-card { min-width: 0; width: 100%; }
+  footer { padding: 32px 20px; }
+}
 </style>
   <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/images/logo-mark.png">
 </head>
