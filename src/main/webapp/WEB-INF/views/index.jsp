@@ -478,5 +478,24 @@ footer { background:#0d1117; color:rgba(255,255,255,.4); padding:48px; }
   const statsEl = document.querySelector('.hero-stats');
   if (statsEl) observer.observe(statsEl);
 </script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then(function (registration) {
+          console.log(
+            "FoodBridge service worker registered successfully:",
+            registration.scope
+          );
+        })
+        .catch(function (error) {
+          console.error(
+            "FoodBridge service worker registration failed:",
+            error
+          );
+        });
+    });
+  }
+</script>
 </body>
 </html>
