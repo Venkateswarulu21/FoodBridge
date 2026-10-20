@@ -24,23 +24,52 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-                                           LoginSuccessHandler success,
-                                           LoginFailureHandler failure) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            LoginSuccessHandler success,
+            LoginFailureHandler failure) throws Exception {
+
         http
             .authorizeHttpRequests(auth -> auth
-                // internal forwards to JSP views and error pages
-                .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                // public pages
-                .requestMatchers("/", "/login", "/register", "/verify-otp", "/resend-otp",
-                                 "/forgot-password", "/reset-password", "/api/otp/**", "/login-otp", "/api/login-otp/**",
-                                 "/error", "/error/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                // role-based areas
+
+                // Allow internal forwards and error dispatches
+                .dispatcherTypeMatchers(
+                    DispatcherType.FORWARD,
+                    DispatcherType.ERROR
+                ).permitAll()
+
+                // Public pages and resources
+                .requestMatchers(
+                    "/",
+                    "/login",
+                    "/register",
+                    "/verify-otp",
+                    "/resend-otp",
+                    "/forgot-password",
+                    "/reset-password",
+                    "/api/otp/**",
+                    "/login-otp",
+                    "/api/login-otp/**",
+                    "/error",
+                    "/error/**",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/manifest.webmanifest",
+                    "/service-worker.js",
+                    "/favicon.ico"
+                ).permitAll()
+
+                // Role-based access
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/donor/**").hasRole("DONOR")
                 .requestMatchers("/receiver/**").hasRole("RECEIVER")
                 .requestMatchers("/volunteer/**").hasRole("VOLUNTEER")
-                .anyRequest().authenticated())
+
+                // All other endpoints require login
+                .anyRequest().authenticated()
+            )
+
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -48,13 +77,24 @@ public class SecurityConfig {
                 .passwordParameter("password")
                 .successHandler(success)
                 .failureHandler(failure)
-                .permitAll())
+                .permitAll()
+            )
+
             .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))   // the sidebar uses a plain link
-                .logoutSuccessUrl("/login?msg=You+have+been+logged+out.")
+                .logoutRequestMatcher(
+                    new AntPathRequestMatcher("/logout")
+                )
+                .logoutSuccessUrl(
+                    "/login?msg=You+have+been+logged+out."
+                )
                 .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID"))
-            .exceptionHandling(ex -> ex.accessDeniedPage("/error/403"));
+                .deleteCookies("JSESSIONID")
+            )
+
+            .exceptionHandling(ex ->
+                ex.accessDeniedPage("/error/403")
+            );
+
         return http.build();
     }
 }
